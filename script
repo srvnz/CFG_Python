@@ -1,0 +1,97 @@
+# CFG_project.py
+"""CodeFirstGirls project script"""
+
+import csv
+import matplotlib.pyplot as plt
+
+# file locations
+source_file_path = './data/sales.csv'
+edited_file_path = './data/sale_edited.csv'
+summary_file_path = './data/summary.csv'
+
+# import the data
+data = []
+with open(source_file_path, newline = '') as raw_data:
+    reader = csv.DictReader(raw_data)
+    for row in reader:
+        data.append(row)
+
+# create sales list
+company_sale = []
+for row in data:
+    sale = int(row['sales'])
+    company_sale.append(sale)
+
+# create expenditure list
+company_expenditure = []
+for row in data:
+    expenditure = int(row['expenditure'])
+    company_expenditure.append(expenditure)
+
+# create month list
+month_list = []
+for row in data:
+    month = row['month']
+    month_list.append(month)
+
+# calculating the total sales across all months
+total_sale = sum(company_sale)
+# return the average sale
+average_sale = int(total_sale / len(company_sale))
+# find the highest sale
+highest_sale = max(company_sale)
+# find the lowest sale
+lowest_sale = min(company_sale)
+# calculate the monthly change in percentages
+m_change_list = [int((y - x) / x * 100) for x, y in zip(company_sale, company_sale[1:])]
+# zip built-in function enables you to iterate over multiple iterables
+# of data at the same time
+# [1:] means from item number 2 (index 1) to the end of the list
+
+# write the summary in a new file
+with open(summary_file_path, 'w', newline = '') as summary_file:
+    fieldnames = ['total sale', 'average sale', 'highest sale', 'lowest sale']
+    writer = csv.DictWriter(summary_file, fieldnames = fieldnames)
+
+    writer.writeheader()
+    writer.writerow({'total sale': total_sale, 'average sale': average_sale,
+                     'highest sale': highest_sale, 'lowest sale': lowest_sale})
+
+rows = [
+    {'month': month_list[0], 'sale': company_sale[0], 'monthly change %': 0},
+    {'month': month_list[1], 'sale': company_sale[1], 'monthly change %': m_change_list[0]},
+    {'month': month_list[2], 'sale': company_sale[2], 'monthly change %': m_change_list[1]},
+    {'month': month_list[3], 'sale': company_sale[3], 'monthly change %': m_change_list[2]},
+    {'month': month_list[4], 'sale': company_sale[4], 'monthly change %': m_change_list[3]},
+    {'month': month_list[5], 'sale': company_sale[5], 'monthly change %': m_change_list[4]},
+    {'month': month_list[6], 'sale': company_sale[6], 'monthly change %': m_change_list[5]},
+    {'month': month_list[7], 'sale': company_sale[7], 'monthly change %': m_change_list[6]},
+    {'month': month_list[8], 'sale': company_sale[8], 'monthly change %': m_change_list[7]},
+    {'month': month_list[9], 'sale': company_sale[9], 'monthly change %': m_change_list[8]},
+    {'month': month_list[10], 'sale': company_sale[10], 'monthly change %': m_change_list[9]},
+    {'month': month_list[11], 'sale': company_sale[11], 'monthly change %': m_change_list[10]}
+]
+
+# write the monthly sale change in a new file
+with open(edited_file_path, 'w', newline = '') as edited_data:
+    fieldnames = ['month', 'sale', 'monthly change %']
+    writer = csv.DictWriter(edited_data, fieldnames = fieldnames)
+
+    writer.writeheader()
+    writer.writerows(rows)
+
+
+# draw a line plot displaying monthly company sale and company expenditure
+def draw_plot():
+    plt.plot(month_list, company_sale, color = 'slategrey', linestyle = 'solid',
+             linewidth = 1, marker = 'v', markerfacecolor = 'aqua', markersize = 7)
+    plt.plot(month_list, company_expenditure, color = 'darkmagenta', linestyle = 'solid',
+             linewidth = 1, marker = 'o', markerfacecolor = 'magenta', markersize = 7)
+    plt.xlabel('Month', fontsize = 12, fontname = 'Arial', weight = 'bold')
+    plt.ylabel('Sale', fontsize = 12, fontname = 'Arial', weight = 'bold')
+    plt.title("Company's sale vs. expenditure in 2018", fontsize = 16,
+              fontname = 'Arial', weight = 'bold')
+    plt.show()
+
+
+draw_plot()
